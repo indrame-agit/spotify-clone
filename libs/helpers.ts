@@ -17,7 +17,7 @@ export const postData = async ({
   data,
 }: {
   url: string;
-  data: { price: Price };
+  data?: { price: Price };
 }) => {
   console.log("postData", url, data);
 
