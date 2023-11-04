@@ -13,7 +13,7 @@ type UserContextType = {
   user: User | null;
   userDetails: UserDetails | null;
   isLoading: boolean;
-  subscriptions: Subscription | null;
+  subscription: Subscription | null;
 };
 
 export const UserContext = createContext<UserContextType | undefined>(
@@ -35,18 +35,18 @@ export const MyUserContextProvider = (props: Props) => {
   const accessToken = session?.access_token ?? null;
   const [isLoadingData, setIsLoadingData] = useState(false);
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
-  const [subscriptions, setSubscriptions] = useState<Subscription | null>(null);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
 
   const getUserDetails = () => supabase.from("users").select("*").single();
   const getSubscriptions = () =>
     supabase
       .from("subscriptions")
-      .select("*, prices(*, product(*))")
+      .select("*, prices(*, products(*))")
       .in("status", ["trialing", "active"])
       .single();
 
   useEffect(() => {
-    if (user && !isLoadingData && !userDetails && !subscriptions) {
+    if (user && !isLoadingData && !userDetails && !subscription) {
       setIsLoadingData(true);
 
       Promise.allSettled([getUserDetails(), getSubscriptions()]).then(
@@ -59,7 +59,7 @@ export const MyUserContextProvider = (props: Props) => {
           }
 
           if (subscriptionsPromise.status === "fulfilled") {
-            setSubscriptions(subscriptionsPromise.value.data as Subscription);
+            setSubscription(subscriptionsPromise.value.data as Subscription);
           }
 
           setIsLoadingData(false);
@@ -67,7 +67,7 @@ export const MyUserContextProvider = (props: Props) => {
       );
     } else if (!user && !isLoadingUser && !isLoadingData) {
       setUserDetails(null);
-      setSubscriptions(null);
+      setSubscription(null);
     }
   }, [user, isLoadingUser]);
 
@@ -76,7 +76,7 @@ export const MyUserContextProvider = (props: Props) => {
     user,
     userDetails,
     isLoading: isLoadingUser || isLoadingData,
-    subscriptions,
+    subscription,
   };
 
   return <UserContext.Provider value={value} {...props} />;

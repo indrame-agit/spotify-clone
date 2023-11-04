@@ -2,8 +2,6 @@ import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 import { Song } from "@/types";
 
-import React from "react";
-
 const useLoadImage = (song: Song) => {
   const supabaseClient = useSupabaseClient();
 
